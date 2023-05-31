@@ -1,0 +1,17 @@
+logs/
+npm-debug.logs
+yarn-error.logs
+node_modules
+
+yarn.lock
+coverage/
+dist/
+.idea/
+.history/
+.vscode/
+run/
+.DS_Store
+*.sw*
+*.un~
+.tsbuildinfo
+.tsbuildinfo.*
