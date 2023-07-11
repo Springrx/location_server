@@ -7,6 +7,7 @@ module.exports = app => {
             autoIncrement:true 
         },
         user_id: INTEGER(10),
+        // location:POINT,
         location_x:DECIMAL(8,5),
         location_y:DECIMAL(7,5),
         text: STRING(2000),

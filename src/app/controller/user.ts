@@ -29,9 +29,8 @@ export class ManageController extends BaseController  {
               data: data,
             };
         break;
-        //info还有bug
         case "info":
-          const  user_id  = ctx.request.query;
+          const  {user_id}  = ctx.request.query;
             let res = await service.getUserInfo(user_id);
               ctx.response.body = {
                 code: "1000",
@@ -48,8 +47,7 @@ export class ManageController extends BaseController  {
     switch (name) {
       case "register":
         // 不能用已有的name去注册
-        let list_queryParameter = ctx.request.body;
-        const { username,password } = list_queryParameter;
+        const { username,password } = ctx.request.body;
         const response =  await service.register({username,password});
         const id=response.dataValues.user_id;
         console.log(response);
@@ -61,6 +59,7 @@ export class ManageController extends BaseController  {
         //如果之后写单独查询用户名的逻辑，则将login修改为先查用户名，再查用户名和密码，并返回不同的错误（用户名不存在，密码输入错误）
         const user={userName,pwd,is_manager};
           const re= await service.login(user);
+          // ctx.body = 'cookie is ok';
           if(re===null){
             this.failed('用户名不存在');
           }
@@ -70,15 +69,11 @@ export class ManageController extends BaseController  {
               data: re,
             };
         break;        
-      case"addSelectWorkOrderMessage":
-        console.log(ctx.request.body,"kctest")
-        const {workOrderMessage} = ctx.request.body;
-        await service.addSelectWorkOrderMessage(workOrderMessage);
-        //   let data = await service.delWorkOrder(id);
-              ctx.response.body = {
-                code: "1000",
-                data: "success",
-              };
+      case "info":
+          const { data, user_id } = ctx.request.body;
+          const res = await service.updateUserAva(data, user_id);
+          if(res==='success') this.success('success');
+          else this.failed('fail');
         break;
   
       case "addWorkOrderPicture":

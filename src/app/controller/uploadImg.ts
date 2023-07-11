@@ -19,7 +19,6 @@ export class UploadController {
     const { ctx } = this;
     let name = ctx.params.name;
     console.log(name)
-    //let title = 'BZ302';
     switch (name) {
       case "getVideo":
         let ImageBasePathV=path.join(this.HOME, `location-files`,`d6f2a450-0a7e-4fb6-a040-70b00b0c4139.mp4`);
@@ -27,6 +26,7 @@ export class UploadController {
           code: "1000",
           data: JSON.stringify({ url: ImageBasePathV }),
         };
+        break;
     }
   }
   @post("/:path")
@@ -51,7 +51,7 @@ export class UploadController {
 
           ctx.response.body = {
             code: "1000",
-            data: JSON.stringify({ url: ImageBasePath }),
+            data: JSON.stringify({ url: path.join(this.HOME, `location-files`, ImageBasePath), }),
           };
           break;   
       

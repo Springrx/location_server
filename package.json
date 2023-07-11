@@ -4,6 +4,8 @@
   "description": "{{description}}",
   "private": true,
   "dependencies": {
+    "@midwayjs/core": "^3.11.11",
+    "@midwayjs/koa": "^3.11.11",
     "egg-cors": "^2.2.3",
     "egg-redis": "^2.4.0",
     "egg-scripts": "^2.10.0",
@@ -22,10 +24,10 @@
     "egg-ci": "^1.8.0",
     "midway-bin": "1",
     "midway-mock": "1",
-    "tslib": "^1.8.1",
-    "tslint-midway-contrib": "1",
     "ts-node": "^8.3.0",
+    "tslib": "^1.8.1",
     "tslint": "^5.11.0",
+    "tslint-midway-contrib": "1",
     "typescript": "^3.5.0"
   },
   "engines": {

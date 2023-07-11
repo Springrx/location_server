@@ -1,5 +1,6 @@
 import { provide, inject, Context, plugin } from 'midway';
 import { ILabService } from '../interface';
+import { md5Pwd } from '../app/common/helper';
 // const path = require('path')
 const { Op } = require("sequelize");
 @provide('labService')
@@ -43,24 +44,71 @@ export class LabService implements ILabService {
 
 
 
-  async getPost(position) {
-    let boundary=50;  //返回一个以position为中心，boundary*2的正方形范围内的所有帖子
-    const location_x=position.lng;
-    const location_y=position.lat;
-    
+  async getPost(getPostInfo) {
+    const {lat,lng,nowPageNum}=getPostInfo;
+    let boundary=0.00045;  //返回一个以position为中心，boundary*2的正方形范围内的所有帖子
+    const location_x=lng;
+    const location_y=lat;
+    const pageSize=10;
     const res = await this.ctx.model.PostModel.findAll({
-      where: {
+      where: 
+      // {
+      // ST_Distance_Sphere(
+      //   point(longitude, latitude),      
+      //   point(location_x, location_y)     
+      // ) <= boundary; }
+      {
         location_x: { [Op.between]: [location_x-boundary, location_x+boundary] },
         location_y: { [Op.between]: [location_y-boundary, location_y+boundary] },
       },
       attributes: ['post_id','user_id', 'location_x','location_y','text','video_url','created_at','updated_at'],
       order:[['created_at','DESC']],
+      offset: pageSize*nowPageNum, 
+      limit: pageSize 
     });
-    // const {updated_at}=res;
-    // const reg = /T/g;
-    // const newStr = updated_at.toString().replace(reg, " ");
+    const totalCount=await this.ctx.model.PostModel.count();
+    const totalPages = Math.ceil(totalCount/pageSize);
+    return {data:res,totalPages:totalPages,pageSize:pageSize,nowPageNum:nowPageNum};
+  }
+async getPostOfUser(user_id: any): Promise<any> {
+    return await this.ctx.model.PostModel.findAll({
+      where:{
+        user_id:user_id
+      },
+      order:[['created_at','DESC']]
+    })
+}
+async updateUserAva(data, user_id) { // 更新我的信息
+  const info = await this.ctx.model.UserInfoModel.findOne({
+    where: {
+      user_id: user_id,
+    }
+  });
+  if (!info) {
+    return 'not exist';
+  }
+  await this.ctx.model.UserInfoModel.update(data, {
+    where: {
+      user_id: user_id,
+    }
+  });
+  return 'success';
+}
+  async getPostImage(post_id){
+    return this.ctx.model.PostPhotoModel.findAll({
+      where:{
+        post_id:post_id
+      }
+    })
+  }
+
+  async getComment(post_id){
     
-    return res;
+    return this.ctx.model.CommentModel.findAll({
+      where:{
+        post_id:post_id
+      }
+    })
   }
   async addWorkOrderPicture(workOrderPicture){
     return this.ctx.model.WorkorderPicturesModel.create(workOrderPicture)
@@ -68,12 +116,16 @@ export class LabService implements ILabService {
   async addPostPhoto(postPhoto){
     return this.ctx.model.PostPhotoModel.create(postPhoto);
   }
+  async addComment(comment){
+
+    return this.ctx.model.CommentModel.create(comment);
+  }
+
   async getUserInfo(user_id) {
-    const res = await this.ctx.model.UserInfoModel.findAll({
-      attributes: ['username', 'password', 'avatar_url'],
+    return this.ctx.model.UserInfoModel.findOne({
+      attributes: ['username', 'avatar_url'],
       where:{user_id:user_id}
     });
-    return res;
   }
   async delWorkOrder(id){
     await this.ctx.model.WorkOrderModel.destroy({where:{id:id}});
@@ -84,6 +136,7 @@ export class LabService implements ILabService {
   async addPost(body){
 
     const{user_id,text,video_url,location_x,location_y}=body;
+
     const data = {
     user_id: user_id,
     text: text,       
@@ -126,7 +179,7 @@ export class LabService implements ILabService {
   }
   async register(body){
     const {username,password}=body;
-    const data={username:username,password:password,
+    const data={username:username,password:md5Pwd(password),
       is_manager:0
     }
     return await this.ctx.model.UserInfoModel.create(data);
@@ -145,7 +198,7 @@ export class LabService implements ILabService {
     return await this.model.UserInfoModel.findOne({
       where: {
         username:userName,
-        password:pwd,
+        password:md5Pwd(pwd),
         is_manager:is_manager
       }
     });
