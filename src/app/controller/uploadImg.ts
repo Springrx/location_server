@@ -1,4 +1,4 @@
-import { Context, inject, controller, post,get, provide } from "midway";
+import { Context, inject, controller, post, get, provide } from "midway";
 import { ILabService } from "../../interface";
 const fs = require("fs");
 const path = require("path");
@@ -21,7 +21,7 @@ export class UploadController {
     console.log(name)
     switch (name) {
       case "getVideo":
-        let ImageBasePathV=path.join(this.HOME, `location-files`,`d6f2a450-0a7e-4fb6-a040-70b00b0c4139.mp4`);
+        let ImageBasePathV = path.join(this.HOME, `location-files`, `d6f2a450-0a7e-4fb6-a040-70b00b0c4139.mp4`);
         ctx.response.body = {
           code: "1000",
           data: JSON.stringify({ url: ImageBasePathV }),
@@ -31,30 +31,30 @@ export class UploadController {
   }
   @post("/:path")
   async postFunc() {
-    const { ctx, service } = this;
+    const { ctx } = this;
     console.log(ctx)
     let path_name = ctx.request.url;
     switch (path_name) {
       case "/uploadImg":
-          let filePath = ctx.request.files[0].filepath;
-          let ImageFile = fs.readFileSync(filePath);
-          let ImageBasePath = path.basename(filePath);
-          const ADestDir = path.join(this.HOME, `location-files`);
-          if(!fs.existsSync(ADestDir)){
-          fs.mkdirSync(ADestDir);            
-          }
-          fs.writeFileSync(
-            path.join(this.HOME, `location-files`, ImageBasePath),
-            ImageFile
-          );
-          
+        let filePath = ctx.request.files[0].filepath;
+        let ImageFile = fs.readFileSync(filePath);
+        let ImageBasePath = path.basename(filePath);
+        const ADestDir = path.join(this.HOME, `location-files`);
+        if (!fs.existsSync(ADestDir)) {
+          fs.mkdirSync(ADestDir);
+        }
+        fs.writeFileSync(
+          path.join(this.HOME, `location-files`, ImageBasePath),
+          ImageFile
+        );
 
-          ctx.response.body = {
-            code: "1000",
-            data: JSON.stringify({ url: path.join(this.HOME, `location-files`, ImageBasePath), }),
-          };
-          break;   
-      
+
+        ctx.response.body = {
+          code: "1000",
+          data: JSON.stringify({ url: path.join(this.HOME, `location-files`, ImageBasePath), }),
+        };
+        break;
+
       case "/uploadVideo":
         let videoPath = ctx.request.files[0].filepath;
         let videoBasePath = path.basename(videoPath);
@@ -74,38 +74,37 @@ export class UploadController {
         ctx.response.body = {
           code: "1000",
           data: JSON.stringify({ url: videoBasePath }),
-          // data: 'success'
         };
         break;
 
-      case "/saveInfo":
+      //       case "/saveInfo":
 
-        let { workorder_id,imgUrl } = ctx.request.body;
-        await this.ctx.model.WorkOrderModel.destroy({where:{id:workorder_id}});
-        const photo={workorder_id:workorder_id, url: imgUrl} 
-        await service.addWorkOrderPicture(photo);
-//         修改,把这边改成新增的操作
-//         let ImgModel = await service.oneImageData(imageId);
+      //         let { workorder_id,imgUrl } = ctx.request.body;
+      //         await this.ctx.model.WorkOrderModel.destroy({where:{id:workorder_id}});
+      //         const photo={workorder_id:workorder_id, url: imgUrl} 
+      //         await service.addWorkOrderPicture(photo);
+      // //         修改,把这边改成新增的操作
+      // //         let ImgModel = await service.oneImageData(imageId);
 
-//         let NowPath = path.join(
-//           ctx.app.baseDir,
-//           `app/public`,
-//           ImgModel[0].photo
-//         );
-//         let AisUndefine = ImgModel[0].photo.split("/").slice(-1)[0];
-//         if (fs.existsSync(NowPath) && AisUndefine!=='undefine.png' && ImgModel[0].photo) {
-//           console.log(NowPath);
-//           fs.unlink(NowPath, (error) => {
-//             console.log(error);
-//           });
-//         }
-//         ImgModel[0].photo = ImageBasePath;
-//         await ImgModel[0].save();
-        ctx.response.body = {
-          code: "1000",
-          data:"success",
-        };
-        break;    
-      }
+      // //         let NowPath = path.join(
+      // //           ctx.app.baseDir,
+      // //           `app/public`,
+      // //           ImgModel[0].photo
+      // //         );
+      // //         let AisUndefine = ImgModel[0].photo.split("/").slice(-1)[0];
+      // //         if (fs.existsSync(NowPath) && AisUndefine!=='undefine.png' && ImgModel[0].photo) {
+      // //           console.log(NowPath);
+      // //           fs.unlink(NowPath, (error) => {
+      // //             console.log(error);
+      // //           });
+      // //         }
+      // //         ImgModel[0].photo = ImageBasePath;
+      // //         await ImgModel[0].save();
+      //         ctx.response.body = {
+      //           code: "1000",
+      //           data:"success",
+      //         };
+      //         break;    
+    }
   }
 }

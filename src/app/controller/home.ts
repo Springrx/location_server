@@ -1,4 +1,4 @@
-import { Context, inject, controller, get, provide, post, } from "midway";
+import { Context, inject, controller, get, provide, post, del} from "midway";
 import { ILabService } from "../../interface";
 import BaseController from "../common/BaseController";
 const path = require('path');
@@ -13,8 +13,7 @@ export class HomeController extends BaseController {
   @inject("labService")
   service: ILabService;
   HOME = process.env.HOME;
-  @get("/:name")
-  // { middleware: ['loginAuthMiddleware'] }
+  @get("/:name",{ middleware: ['loginAuthMiddleware'] })
   async getFunc() {
     const { ctx, service } = this;
     let name = ctx.params.name;
@@ -23,7 +22,6 @@ export class HomeController extends BaseController {
     switch (name) {
       case "post":
         let getPostInfo = ctx.request.query;
-        console.log(getPostInfo,'post kc');
         let data = await service.getPost(getPostInfo);
         ctx.response.body = {
           code: "1000",
@@ -84,7 +82,12 @@ export class HomeController extends BaseController {
         let { postId, userId, commentText, commentMediaUrl,mediaType } = ctx.request.body;
         const comment = { post_id: postId, user_id: userId, text: commentText, media_url: commentMediaUrl === '' ? '' : path.join(this.HOME, `location-files`, commentMediaUrl), media_type: mediaType }
         const commentSuc = await service.addComment(comment);
-        this.success(commentSuc);
+        if(commentSuc){
+        const user=await service.getUserInfo(commentSuc.user_id);
+        commentSuc.dataValues.avatar_url=user.avatar_url;
+        commentSuc.dataValues.username=user.username;
+        this.success(commentSuc);}
+        else this.failed('评论失败')
         break;
       case "postImage":
         let postPhoto = ctx.request.body;
@@ -94,17 +97,17 @@ export class HomeController extends BaseController {
           data: ret.post_id,
         };
         break;
-      case "updateWorkOrder":
-        await service.updateWorkOrder(ctx.request.body);
-        ctx.response.body = {
-          code: "1000",
-          data: "success",
-        };
-        break;
-      case "delWorkOrder":
-        let list_queryParameter = ctx.request.body;
-        const { id } = list_queryParameter;
-        await service.delWorkOrder(id);
+    }
+  }
+  @del("/:name",{ middleware: ['loginAuthMiddleware'] })
+  async delFunc() {
+    const { ctx, service } = this;
+    let name = ctx.params.name;
+    console.log(name)
+    switch (name) {
+      case "post":
+        const { post_id } = ctx.request.body;
+        await service.delPost(post_id);
         ctx.response.body = {
           code: "1000",
           data: "success",
