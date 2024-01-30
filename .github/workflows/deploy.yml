@@ -20,7 +20,7 @@ jobs:
               with:
                     host: 106.15.170.182
                     username: aplus
-                    key: ${{ secrets.DEPLOY_KEY }}
+                    password: ${{ secrets.SERVER_PASSWORD }}
                     script: |
                         cd /home/aplus/locationTap
                         sudo git pull
