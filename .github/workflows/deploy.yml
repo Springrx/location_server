@@ -24,5 +24,6 @@ jobs:
                     script: |
                         cd /home/aplus/locationTap
                         sudo git pull
+                        cd /home/aplus/locationTap/location_server
                         npm install
                         npm run dev
