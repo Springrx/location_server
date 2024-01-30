@@ -20,13 +20,12 @@ jobs:
               with:
                     host: 106.15.170.182
                     username: aplus
-                    password: ${{ secrets.SERVER_PASSWORD }}
+                    key: ${{ secrets.DEPLOY_KEY }}
                     script: |
-                        git clone https://github.com/Springrx/location_server.git
-                        cd /home/aplus/location_server
+                        cd /home/aplus/locationTap
+                        sudo git pull
                         npm install
                         npm run dev
-
             # - name: 
             #     Pull latest code
             #   run: git clone https://github.com/Springrx/location_server.git
