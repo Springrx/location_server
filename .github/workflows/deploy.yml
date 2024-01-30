@@ -3,11 +3,11 @@ name: Deploy to Server
 on:
     push:
         branches:
-            - master
+            - main
 
 jobs:
     deploy:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-18.04
 
         steps:
             - name: 
