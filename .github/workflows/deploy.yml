@@ -21,13 +21,18 @@ jobs:
                     host: 106.15.170.182
                     username: aplus
                     password: ${{ secrets.SERVER_PASSWORD }}
+                    script: |
+                        git clone https://github.com/Springrx/location_server.git
+                        cd /home/aplus/location_server
+                        npm install
+                        npm run dev
 
-            - name: 
-                Pull latest code
-              run: git clone https://github.com/Springrx/location_server.git
+            # - name: 
+            #     Pull latest code
+            #   run: git clone https://github.com/Springrx/location_server.git
 
-            - name: Install dependencies
-              run: npm install
+            # - name: Install dependencies
+            #   run: npm install
 
-            - name: Run code
-              run: npm run dev
+            # - name: Run code
+            #   run: npm run dev
